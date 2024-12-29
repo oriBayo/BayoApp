@@ -1,18 +1,34 @@
-import { View, Text, ScrollView, Image } from 'react-native';
+import { View, Text, ScrollView, Image, Alert } from 'react-native';
 import React, { useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { images } from '@/constants';
 import FormField from '@/components/FormField';
 import CustomButton from '@/components/CustomButton';
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
+import { signIn } from '@/actions/userAction';
 
 const SignIn = () => {
   const [form, setForm] = useState({
     email: '',
     password: '',
   });
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogin = () => {};
+  const submit = async () => {
+    try {
+      if (form.email === '' || form.password === '') {
+        Alert.alert('שגיאה', 'אנא מלא את כל השדות');
+        return;
+      }
+      setIsLoading(true);
+      await signIn(form.email, form.password);
+      router.replace('/home');
+    } catch (error) {
+      Alert.alert('שגיאה', 'שם משתמש או סיסמה שגויים');
+    } finally {
+      setIsLoading(false);
+    }
+  };
   return (
     <SafeAreaView className='bg-primary h-full'>
       <ScrollView>
@@ -46,10 +62,8 @@ const SignIn = () => {
             title='התחבר'
             containerStyle='mt-8'
             textStyle='font-bold'
-            handlePress={() => {
-              handleLogin;
-            }}
-            isLoading={false}
+            handlePress={submit}
+            isLoading={isLoading}
           />
 
           <Text className='text-center text-white mt-4 text-xl'>

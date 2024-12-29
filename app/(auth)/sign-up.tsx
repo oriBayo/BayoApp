@@ -1,11 +1,11 @@
-import { View, Text, ScrollView, Image } from 'react-native';
+import { View, Text, ScrollView, Image, Alert } from 'react-native';
 import React, { useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { images } from '@/constants';
 import FormField from '@/components/FormField';
 import CustomButton from '@/components/CustomButton';
-import { Link } from 'expo-router';
-import { createUser } from '@/actions/userAction';
+import { Link, router } from 'expo-router';
+import { signUp } from '@/actions/userAction';
 
 const SignUp = () => {
   const [form, setForm] = useState({
@@ -14,9 +14,17 @@ const SignUp = () => {
     name: '',
   });
 
-  const handleSignUp = async () => {
-    const user = await createUser(form);
-    console.log(user);
+  const submit = async () => {
+    if (form.email === '' || form.password === '' || form.name === '') {
+      Alert.alert('שגיאה', 'אנא מלא את כל השדות');
+      return;
+    }
+    try {
+      const user = await signUp(form.email, form.password, form.name);
+      router.replace('/home');
+    } catch (error) {
+      Alert.alert('שגיאה', (error as Error).message);
+    }
   };
   return (
     <SafeAreaView className='bg-primary h-full'>
@@ -60,7 +68,7 @@ const SignUp = () => {
             title='הרשם'
             containerStyle='mt-8'
             textStyle='font-bold'
-            handlePress={handleSignUp}
+            handlePress={submit}
             isLoading={false}
           />
           <Text className='text-center text-white mt-4 text-xl'>

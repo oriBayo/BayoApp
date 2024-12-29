@@ -1,12 +1,12 @@
-import { TouchableOpacity, Text, View } from 'react-native';
+import { TouchableOpacity, Text, View, ActivityIndicator } from 'react-native';
 import React from 'react';
 
 type CustomButtonProps = {
   title: string;
   handlePress: () => void;
-  containerStyle: string;
-  textStyle: string;
-  isLoading: boolean;
+  containerStyle?: string;
+  textStyle?: string;
+  isLoading?: boolean;
 };
 
 const CustomButton = ({
@@ -25,7 +25,12 @@ const CustomButton = ({
       onPress={handlePress}
       disabled={isLoading}
     >
-      <Text className={`text-primary ${textStyle}`}>{title}</Text>
+      <View className='flex-row justify-center items-center gap-4'>
+        {isLoading && (
+          <ActivityIndicator size='large' className='text-primary' />
+        )}
+        <Text className={`text-primary ${textStyle}`}>{title}</Text>
+      </View>
     </TouchableOpacity>
   );
 };
